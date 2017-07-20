@@ -8,6 +8,10 @@ The thinking as of this writing:
 
 SO - there is NO Cognito User Pools used here. AT ALL. This is strictly for apps that are totally cool with social media (and other 3rd party identity providers) being the way to log in.
 
+## Note
+
+As of this writing the client IDs of my apps (aws, google and facebook) are all hard wired into this code. I'll pull them out and put them in config files but for now please don't hammer on my apps.
+
 ## Releases
 
 I'm experimenting with using tags (aka releases) as a tutorial mechanism. Each 'release' will add a little more functionality so you can easily isolate the functionality.
