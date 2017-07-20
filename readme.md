@@ -6,7 +6,9 @@ The thinking as of this writing:
   - BUT.... that module is not ready and won't be stable until (at least) early 2018 by my guess
   - So for now, we just allow log ins from social media sites
 
-## Initial version
+SO - there is NO Cognito User Pools used here. AT ALL. This is strictly for apps that are totally cool with social media (and other 3rd party identity providers) being the way to log in.
 
-All you can do is log in and log out.
+## Releases
+
+I'm experimenting with using tags (aka releases) as a tutorial mechanism. Each 'release' will add a little more functionality so you can easily isolate the functionality.
 
