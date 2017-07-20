@@ -12,7 +12,11 @@ SO - there is NO Cognito User Pools used here. AT ALL. This is strictly for apps
 
 As of this writing the client IDs of my apps (aws, google and facebook) are all hard wired into this code. I'll pull them out and put them in config files but for now please don't hammer on my apps.
 
+### SDK
+
+The SDK file in public/js was created using the [SDK Builder](https://sdk.amazonaws.com/builder/js/) tool. It has a tiny subset of the full aws-sdk. That will get added to as the functionality expands
+
 ## Releases
 
-I'm experimenting with using tags (aka releases) as a tutorial mechanism. Each 'release' will add a little more functionality so you can easily isolate the functionality.
+I'm experimenting with using tags (aka releases) as a tutorial mechanism. Each 'release' will add a little more functionality so you can easily isolate the functionality. See the current releases [here](https://github.com/victor-stone/federated-login/releases)
 
