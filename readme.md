@@ -8,15 +8,22 @@ The thinking as of this writing:
 
 SO - there is NO Cognito User Pools used here. AT ALL. This is strictly for apps that are totally cool with social media (and other 3rd party identity providers) being the way to log in.
 
-## Note
+## Releases
 
-As of this writing the client IDs of my apps (aws, google and facebook) are all hard wired into this code. I'll pull them out and put them in config files but for now please don't hammer on my apps.
+I'm experimenting with using tags (aka releases) as a tutorial mechanism. Each 'release' will add a little more functionality so you can easily isolate the functionality. See the current releases [here](https://github.com/victor-stone/federated-login/releases)
+
+## Notes
 
 ### SDK
 
 The SDK file in public/js was created using the [SDK Builder](https://sdk.amazonaws.com/builder/js/) tool. It has a tiny subset of the full aws-sdk. That will get added to as the functionality expands
 
-## Releases
+### AWS Requirements
 
-I'm experimenting with using tags (aka releases) as a tutorial mechanism. Each 'release' will add a little more functionality so you can easily isolate the functionality. See the current releases [here](https://github.com/victor-stone/federated-login/releases)
+This only works if you have created a Cognito Federedated Identities pool from the Cognito service. Once you have that pool up and running you'll need to set it up [as described here](http://docs.aws.amazon.com/cognito/latest/developerguide/external-identity-providers.html)
+
+### Hard coded IDs
+
+As of this writing the client IDs of my apps (aws, google and facebook) are all hard wired into this code. I'll pull them out and put them in config files but for now please don't hammer on my apps.
+
 
