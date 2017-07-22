@@ -10,8 +10,8 @@ import {
 
 import { Provider } from 'react-redux';
 
-import Login from './components/login';
-import Navbar from './components/navbar';
+import Login from './components/login.jsx';
+import Navbar from './components/navbar.jsx';
 
 import Store from './store';
 
