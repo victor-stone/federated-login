@@ -12,17 +12,19 @@ class FacebookLoginButton extends React.Component {
   render() {
 
     const {
-      size = 'large',
-      type = FacebookLogin.types.LOGIN_WITH,
-      profilePick = false,
-      friends = false,
-      width = undefined,
-      autoLogout = 'false'
+      size         = 'large',
+      type         = ['login_with','continue_with'][0],
+      profilePick  = false,
+      friends      = false,
+      width        = undefined,
+      autoLogout   = 'false',
+      scope        = 'public_profile,email',
+      className    = 'fb-login-button'
     } = this.props;
 
     const bool = { [true]: 'true', [false]: 'false' };
 
-    return (<div className="fb-login-button" 
+    return (<div className={className}
                  data-max-rows="1" 
                  data-width={width}
                  data-size={size}
@@ -30,23 +32,30 @@ class FacebookLoginButton extends React.Component {
                  data-show-faces={bool[friends]}
                  data-auto-logout-link={bool[autoLogout]}
                  data-use-continue-as={bool[profilePick]}
-                 data-scope="public_profile,email"
+                 data-scope={scope}
                  data-onlogin="checkloginState();"
             />);
   }
 }
-
-const FACEBOOK_CLIENT_ID = '115757859022458';
 
 class FacebookLogin extends IdProvider {
 
   constructor() {
     super({...arguments, name:'facebook'});
     this._accessToken = null;
+  }
+
+  _initSDK() {
+    const {
+      Facebook: {
+        clientId
+      }
+    } = this._config;
+
     window.checkloginState = this.getStatus.bind(this);
     window.fbAsyncInit = function() {
       FB.init({
-        appId            : FACEBOOK_CLIENT_ID,
+        appId            : clientId,
         autoLogAppEvents : true,
         xfbml            : true,
         version          : 'v2.9'
@@ -56,9 +65,12 @@ class FacebookLogin extends IdProvider {
 
     (function(d, s, id) {
       var js, fjs = d.getElementsByTagName(s)[0];
-      if (d.getElementById(id)) return;
-      js = d.createElement(s); js.id = id;
-      js.src = '//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.9&appId=' + FACEBOOK_CLIENT_ID;
+      if (d.getElementById(id)) {
+        return;
+      }
+      js = d.createElement(s); 
+      js.id = id;
+      js.src = '//connect.facebook.net/en_US/sdk.js#xfbml=1&version=v2.9&appId=' + clientId;
       fjs.parentNode.insertBefore(js, fjs);
     }(document, 'script', 'facebook-jssdk'));    
   }
@@ -69,9 +81,10 @@ class FacebookLogin extends IdProvider {
 
 
   get ux() {
+    this._initSDK();
     return props => {
       this.props = { ...props };
-      return <FacebookLoginButton  />;
+      return <FacebookLoginButton {...this._config.Facebook.buttonOptions} />;
     };
   }
 
@@ -84,25 +97,16 @@ class FacebookLogin extends IdProvider {
         if( response.status === 'connected' ) {
             this._accessToken = response.authResponse.accessToken;
 
-            FB.api( '/me', 
-                    { 
-                      fields: 'email,first_name,last_name,picture'
-                    }, 
-                    fields => this.onAuthorized( {...fields, picture: fields.picture.data.url } ) );
+            FB.api( '/me', { fields: this._config.Facebook.fields }, 
+                    fields => this.onAuthenticated( {...fields, picture: fields.picture.data.url } ) );
         } else {
           this._accessToken = null;
-          this.onNotAuthorized();
+          this.onNotAuthenticated();
         }
       });      
   }
 
 }
-
-FacebookLogin.types = {
-  LOGIN_WITH: 'login_with',
-  CONTINUE_WITH: 'continue_with'
-};
-
 
 module.exports = new FacebookLogin();
 

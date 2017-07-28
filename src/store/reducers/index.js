@@ -1,14 +1,17 @@
 import { combineReducers } from 'redux';
 
-import authReducer from './auth';
+import auth    from './auth';
+import modal   from './modal';
+import profile from './profile';
 
-// pass in an object to combineReducers() that represents a mapping of each reducers
-// in a component we can reference the `authorized` attribute with `state.auth.authorized`
-const rootReducer = combineReducers({
-  auth: authReducer
-});
+const reducers = {
+  auth,
+  modal,
+  profile
+};
 
-// export the combined reducers for use inside `store/index.js` to 
-// create the Redux store (aka the Redux state)
+const rootReducer = combineReducers(reducers);
+
+rootReducer.reducers = reducers;
 
 module.exports = rootReducer;

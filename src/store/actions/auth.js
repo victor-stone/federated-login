@@ -1,40 +1,33 @@
-const AUTH_USER      = 'AUTH_USER';
-const UNAUTH_USER    = 'UNAUTH_USER';
-const SET_USER       = 'SET_USER';
-const SET_AUTH_PROVIDER   = 'SET_AUTH_PROVIDER';
+const SET_CREDENTIALS      = 'SET_CREDENTIALS';
+const CLEAR_CREDENTIALS    = 'CLEAR_CREDENTIALS';
+const SET_AUTH_PROVIDER    = 'SET_AUTH_PROVIDER';
 
-function logoutUser(){
+function clearCredentails(){
   return {
-      type: UNAUTH_USER
+      type: CLEAR_CREDENTIALS
     };
 }
 
-function setUser(user){
-  return function(dispatch){
-    dispatch({
-      type: AUTH_USER
-    });
-    dispatch({
-      type: SET_USER,
-      payload: user
-    });
-  };
+function setCredentails(credentials){
+  return {
+      type: SET_CREDENTIALS,
+      credentials
+    };
 }
 
 function setProvider(provider) {
   return {
       type: SET_AUTH_PROVIDER,
-      payload: provider
+      provider
     };
 }
 
 module.exports = {
-  logoutUser,
-  setUser,
+  clearCredentails,
+  setCredentails,
   setProvider,
 
-  AUTH_USER,
-  UNAUTH_USER,
-  SET_USER,
+  SET_CREDENTIALS,
+  CLEAR_CREDENTIALS,
   SET_AUTH_PROVIDER
 };

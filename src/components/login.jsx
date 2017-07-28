@@ -1,37 +1,50 @@
 import React       from 'react';
 import { connect } from 'react-redux';
+
 import { 
-  setUser,
-  logoutUser,
+  setCredentails,
+  clearCredentails,
   setProvider
  } from '../store/actions/auth';
+
+import {
+  openModal,
+  closeModal
+} from '../store/actions/modal';
+
+import {
+  setProfile
+} from '../store/actions/profile';
+
+import Modal from './modal.jsx';
 
 import providers from '../auth/providers';
 
 const { Component } = React;
 
+/*
+    Quick and dirty Alert box
+*/
 const Alert = ({error}) => <div className="alert alert-danger"><strong>{'Wups! '}</strong>{error.toString()}</div>;
 
-class Login extends Component {
+/*
+    <a /> tag to be used anywhere in the site (esp Navbar)
+*/
+class _Login extends Component {
 
   constructor() {
     super(...arguments);
-    [ 'login', 'logout', 'error' ].forEach( n => this[n] = this[n].bind(this) );
-    this.state = { error: null };
+    [ 'login', 'logout' ].forEach( n => this[n] = this[n].bind(this) );
   }
 
-  login(provider) {
-    this.setState({error:null});
-    this.props.setUser(provider.fields); // <-- dispatches to redux store 
-    this.props.setProvider(provider.name);
+  logout(e) {
+    e.preventDefault();
+    this.props.clearCredentails();
   }
 
-  logout() {
-    this.props.logoutUser();
-  }
-
-  error(error) {
-    this.setState( {error} );
+  login(e) {
+    e.preventDefault();
+    this.props.openModal('login');
   }
 
   render() {
@@ -39,6 +52,52 @@ class Login extends Component {
       isLoggedIn,
       picture
     } = this.props;
+
+    return( 
+        isLoggedIn
+          ? <a href='#' onClick={this.logout}>{'Logout'}{picture && <img className="profile-pic" src={picture} />}</a>
+          : <a href='#' onClick={this.login}> {'Log in'}</a>      
+      );
+  }
+}
+
+const mapStateToProps    = s => ({ isLoggedIn: s.auth.authenticated, picture: s.profile && s.profile.picture });
+
+const mapDispatchToProps = {  clearCredentails, 
+                              openModal
+                            };
+
+const Login  = connect( mapStateToProps, mapDispatchToProps )(_Login);
+
+
+class Popup extends Component {
+
+  constructor() {
+    super(...arguments);
+    [ 'login', 'error' ].forEach( n => this[n] = this[n].bind(this) );
+    this.state = { error: null };
+  }
+
+  error(error) {
+    this.setState( {error} );
+  }
+
+  login(provider) {
+    
+    const {
+      setCredentails,
+      setProvider,
+      setProfile
+    } = this.props;
+
+    setProfile(provider.profile); 
+    setCredentails(provider.credentials);
+    setProvider(provider.name);
+
+    this.props.closeModal();
+  }
+
+  render() {
 
     const {
       error
@@ -50,28 +109,24 @@ class Login extends Component {
       notAuthenticated: this.logout
     };
 
-    return( 
-      <div>
+    return (
+      <Modal name="login" contentLabel="Login">
         {error && <Alert error={error} />}
-        {isLoggedIn
-          ? <a onClick={this.logout}>{'Logout'}{picture && <img src={picture} />}</a>
-          : <ul className="list-group">{[...providers].map( (p,i) => <ul className="list-group-item" key={i}>{p.ux(providerProps)}</ul>)}</ul>
-        }
-      </div>
-      );
+        <ul className="list-group">{[...providers].map( (p,i) => <ul className="list-group-item" key={i}>{p.ux(providerProps)}</ul>)}</ul>
+      </Modal>);
   }
+
 }
 
-const mapStateToProps    = s => { return { 
-                                      isLoggedIn: s.auth.authenticated, 
-                                      picture: s.auth.user.picture 
-                                    }; };
+const mapStateToProps2    = s => ({ isLoggedIn: s.auth.authenticated });
 
-const mapDispatchToProps = {  setUser, 
-                              logoutUser, 
-                              setProvider 
+const mapDispatchToProps2 = {  setCredentails, 
+                               clearCredentails, 
+                               setProvider,
+                               setProfile,
+                               closeModal
                             };
 
-const ConnectedLogin  = connect( mapStateToProps, mapDispatchToProps )(Login);
+Login.Popup = connect( mapStateToProps2, mapDispatchToProps2 )(Popup);
 
-module.exports =  ConnectedLogin;
+module.exports =  Login;

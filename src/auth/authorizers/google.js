@@ -30,8 +30,9 @@ class GoogleLogin extends IdProvider {
   }
 
   get ux() {
+    this._initSDK();
     return props => {
-      console.log('ux props', props); // eslint-disable-line
+      // console.log('ux props', props); // eslint-disable-line
       this.props = { ...props };
       return <GoogleLoginButton />;
     };
@@ -42,6 +43,35 @@ class GoogleLogin extends IdProvider {
     auth2.signOut(); // <--promise
   }
   
+  _initSDK() {
+    const {
+      Google: {
+        clientId,
+        scope
+      }
+    } = this._config;
+
+    const id = 'google-sdk';
+    if ( !document.getElementById(id) ) {
+      const firstTag = document.getElementsByTagName('script')[0];
+      const head     = firstTag.parentNode;
+
+      let meta = document.createElement('meta');
+      meta.name = 'google-signin-scope';
+      meta.contnent = scope;
+      document.getElementsByTagName('head')[0].appendChild(meta);
+      meta = document.createElement('meta');
+      meta.name = 'google-signin-client_id';
+      meta.content = clientId;
+      document.getElementsByTagName('head')[0].appendChild(meta);
+
+      const js = document.createElement('script'); 
+      js.id = id;
+      js.src = 'https://apis.google.com/js/platform.js';
+      head.insertBefore(js,firstTag);
+    }
+  }
+
   getStatus(googleUser) {
 
     // if (authResult['status']['signed_in']) {    
@@ -56,10 +86,10 @@ class GoogleLogin extends IdProvider {
         picture: profile.getImageUrl(),
         first_name: profile.getName()
       };
-      this.onAuthorized(fields);
+      this.onAuthenticated(fields);
     } else {
       this._accessToken = null;
-      this.onNotAuthorized();
+      this.onNotAuthenticated();
     }
   }
 

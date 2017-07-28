@@ -1,61 +1,47 @@
 import providers from '../../auth/providers';
 
 import { 
-  AUTH_USER, 
-  UNAUTH_USER, 
-  SET_USER,
+  SET_CREDENTIALS, 
+  CLEAR_CREDENTIALS, 
   SET_AUTH_PROVIDER
 } from '../actions/auth';
 
-const CREDENTIALS = {
-  accessKey: '',
-  secretKey: '',
+const EMPTY_CREDENTIALS = {
+  accessKeyId: '',
+  secretAccessKey: '',
   sessionToken: '',
-  indenityId: ''  
-};
-
-const NO_USER = {
-  authenticated:  false,
-  ...CREDENTIALS
+  identityId: ''  
 };
 
 const INITIAL_STATE = {
   provider:       null,
-  user: {},
-  ...NO_USER
+  ...EMPTY_CREDENTIALS
 };
 
 const reducer = (state = INITIAL_STATE, action) => {
 
   switch(action.type){
-    case AUTH_USER:
+    case SET_CREDENTIALS:
       return {
         ...state,
         authenticated: true,
         ...action.credentials
       };
 
-    case UNAUTH_USER: {
+    case CLEAR_CREDENTIALS: {
       const idProvider = providers.find( state.provider );
       idProvider.logout();
       return {
         ...state,
         authenticated: false,
-        user: {},
-        ...NO_USER
+        ...EMPTY_CREDENTIALS
       };
     }
-
-    case SET_USER:
-      return {
-        ...state,
-        user: { ...action.payload }
-      };
 
     case SET_AUTH_PROVIDER:
       return {
         ...state,
-        provider: action.payload
+        provider: action.provider
       };
   }
   return state;

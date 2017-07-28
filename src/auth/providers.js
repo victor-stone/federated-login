@@ -1,5 +1,6 @@
-
 import * as authorizers from './authorizers';
+
+/* global AWS */
 
 class IDAuthorizationProviders {
 
@@ -10,7 +11,17 @@ class IDAuthorizationProviders {
                         .map( key => authorizers[key] );
   }
 
+  set config({ REGION, IDENTITY_POOL_ID, ...otherstuff }) {
+    AWS.config.update({
+      region: REGION
+    });
+    this._config = { REGION, IDENTITY_POOL_ID, ...otherstuff };
+    this.__providers.forEach( p => p.config = this._config );
+  }  
+  
+
   add(provider) {
+    provider.config = this._config;
     this.__providers.push(provider);
   }
 

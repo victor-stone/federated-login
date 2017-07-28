@@ -1,13 +1,6 @@
 
 /* global AWS */
 
-import Profile from './aws-profile';
-
-AWS.config.update({
-  region: Profile.REGION
-});
-
-
 class IdProvider {
 
   constructor({name}) {
@@ -19,7 +12,7 @@ class IdProvider {
     throw 'derived class of IdProvider must implement loginDescriptor';
   }
 
-  ux(props) { // eslint-disable-line
+  ux(props) { // eslint-disable-line no-unused-vars
     throw 'derived class of IdProvider must implement ux';
   }
 
@@ -27,19 +20,38 @@ class IdProvider {
     return this._name;
   }
   
-  get fields() {
+  get profile() {
     return this._fields;
   }
-  
+
+  get credentials() {
+    const {
+      accessKeyId,
+      secretAccessKey,
+      sessionToken,
+      identityId
+    } = AWS.config.credentials;
+
+    return {  
+      accessKeyId,
+      secretAccessKey,
+      sessionToken,
+      identityId
+    };
+  }
+
+  set config({ REGION, IDENTITY_POOL_ID, ...otherstuff }) {
+    this._config = { REGION, IDENTITY_POOL_ID, ...otherstuff };
+  }  
+
   logout() {
 
   }
 
-  onAuthorized(fields) {
+  onAuthenticated(fields) {
 
       AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-
-        IdentityPoolId: Profile.IDENTITY_POOL_ID,
+        IdentityPoolId: this._config.IDENTITY_POOL_ID,
         Logins: this.loginDescriptor
       });
 
@@ -65,19 +77,18 @@ class IdProvider {
 
 
       */
-      AWS.config.credentials.get( (err) => {
+      AWS.config.credentials.get( err => {
         if( err ) {
           error && error(err);
         } else {
+          this._fields = fields;
           AWS.config.credentials.identityId && 
-            authenticated && 
-            (this._fields = fields) &&
             authenticated(this);
         }
       });
   }
 
-  onNotAuthorized() {
+  onNotAuthenticated() {
    
     const {
       notAuthenticated
