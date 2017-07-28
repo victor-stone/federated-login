@@ -1,9 +1,14 @@
 
 module.exports = {
   store: require('../store'),
-  reducers: require('../store/reducers'),
+  rootReducer: require('../store/reducers'),
+  actions: {
+    auth: require('../store/actions/auth'),
+    modal: require('../store/actions/modal'),
+    profile: require('../store/actions/profile')
+  },
   loginPopup: require('../components/login'),
   providers: require('../auth/providers'),
-  idProvider: require('../auth/id-provider'),
+  IdProvider: require('../auth/id-provider'),
   authorizers: require('../auth/authorizers')
 };
