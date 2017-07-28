@@ -48,6 +48,23 @@ class IdProvider {
         error
       } = this.props;
 
+      /*
+          Lot of moving parts behind the scenes:
+
+          These are AWS APIs served from AWS-SDK (which is 
+          not the same as individual SDKs)
+
+            - CognitoIdentityCredentials ('Credentials' object)
+
+            - CognitoIdentity ('Service')
+                getId()
+                getCredentialsForIdentity()
+                
+            - CognitoIdentityServiceProvider ('Service')
+            - STS ('Service')
+
+
+      */
       AWS.config.credentials.get( (err) => {
         if( err ) {
           error && error(err);
