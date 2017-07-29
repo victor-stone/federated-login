@@ -1,13 +1,34 @@
-# A workbench for testing Cognito Federated Idenities
-
-You can now import this package and integrate several pieces into any app.
+# Encapsulation and Testbench Cognito Federated Idenities
 
 
-## Create a config object to initiate
+## Testbench
+
+To use this package as a test bench:
+```bash
+git clone https://github.com/victor-stone/federated-login.git .
+```
+
+Edit the file `example/config.js` to specify your environment.
+```bash
+npm run start
+```
+Then browser to http://localhost:8080
+
+## Package
+To use these components in your application:
+```bash
+npm install https://github.com/victor-stone/federated-login.git --save
+```
+Then write a bunch of code.
+
+### Initialize
+
+No matter what part of this package you use, you must initialize the AWS and individual providers with
+you app's specific details.
 
 ```javascript
 
-import FL from 'federated-login';
+import { providers } from 'federated-login';
 
 const myConfig = {
   REGION: 'us-west-2', // <--- REPLACE
@@ -34,36 +55,59 @@ const myConfig = {
 };
 
 // Initialize the AWS and federated authenticators 
-// you do this one time (e.g. in App.jsx
+// you do this one time (e.g. in App.jsx)
 
-FL.providers.config = myConfig;
+providers.config = myConfig;  // <-- IMPORTANT do this
 
 ```
 
-## React
+### React
 
 If you have a React app you can use the components
 
 ```jsx
+import { Login } from 'federated-login';
 
 <nav>
-   <ul className="navbar">
-    <li><FL.Login /></li>  //<-- a login/logout link that invokes the popup
-   ...
+   <ul>
+    <li><Login /></li>  //<-- a login/logout link that invokes the popup
    </ul>
-   <FL.Login.Popup /> // <-- the actual popup 
+   <Login.Popup /> // <-- the actual popup (advised to put this outside a <ul /> tag)
 </nav>
 
 ```
 
-## Redux
+Format the styles (see [React Modal package](https://www.npmjs.com/package/react-modal#styles) for details.)
 
-If you a Redux app you can grab the individual reducers and combine them with yours into your store
+```javascript
+
+const { defaultStyles } = Login;
+
+defaultStyles.content.width = '50%';
+defaultStyles.content.margin = 'auto';
+
+```
+### Redux
+
+If you have a Redux app you can grab the individual reducers and combine them with yours into your store
 
 
 ```javascript
 
-const { auth, modal, profile } = FL.rootReducer;
+import { 
+  combineReducers 
+} from 'redux';
+
+import {
+  rootReducer,
+  actions
+} from 'federated-login';
+
+const { 
+  auth, 
+  modal, 
+  profile 
+} = rootReducer;
 
 const reducers = {
   auth,
@@ -74,20 +118,23 @@ const reducers = {
   myYetAnotherReducer,
 };
 
+const myRootReducer = combineReducers(reducers);
+
 // Get the actions 
 
-const { auth: {
-           setCredentials,
-           getCredentials
-         },
-        modal: {
-           openModal,
-           closeModal
-        },
-        profile: {
-           setProfile
-        }
- } = FL.actions;
+const { 
+  auth: {
+       setCredentials,
+       getCredentials
+     },
+    modal: {
+       openModal,
+       closeModal
+    },
+    profile: {
+       setProfile
+    }
+ } = actions;
 
 // (boilerplate Redux glue:)
 const mapStateToProps => s => ({ profile: s.profile });
@@ -97,9 +144,9 @@ comp MyComponent = connect(mapStateToProps,mapDispatchToProps)(_MyComponent)
 
 ```
 
-## Other Providers
+### Other Providers
 
-To create your provider that isn't covered here, derive from idProvider and 'add' your derivation
+To create a provider that isn't covered here, derive from idProvider and 'add()' your derivation
 
 
 ```javascript
@@ -109,9 +156,8 @@ import {
   providers
 } from 'federated-login';
 
-class AmazonLogin from IdProvider {
+class MyAmazonIdAuthenticator extends IdProvider {
   // derivations must implement:
-  // see Facebook and Google provider for details
 
   get loginDescriptor() {
   }
@@ -120,9 +166,12 @@ class AmazonLogin from IdProvider {
     return props => <SomeReactComponent {...props} />
   }
 
+  // see Facebook and Google provider for details
+
 }
 
-providers.add( new AmazonLogin() )
+providers.add( new MyAmazonIdAuthenticator() );  // <-- Do this
+
 ````
 
 The thinking as of this writing:
@@ -133,21 +182,21 @@ The thinking as of this writing:
 
 SO - there is NO Cognito User Pools used here. AT ALL. This is strictly for apps that are totally cool with social media (and other 3rd party identity providers) being the way to log in.
 
-## Releases
+### Releases
 
 I'm experimenting with using tags (aka releases) as a tutorial mechanism. Each 'release' will add a little more functionality so you can easily isolate the functionality. See the current releases [here](https://github.com/victor-stone/federated-login/releases)
 
-## Notes
+### Notes
 
-### SDK
+#### SDK
 
 The SDK file in public/js was created using the [SDK Builder](https://sdk.amazonaws.com/builder/js/) tool. It has a tiny subset of the full aws-sdk. That will get added to as the functionality expands
 
-### AWS Requirements
+#### AWS Requirements
 
 This only works if you have created a Cognito Federedated Identities pool from the Cognito service. Once you have that pool up and running you'll need to set it up [as described here](http://docs.aws.amazon.com/cognito/latest/developerguide/external-identity-providers.html)
 
-### Hard coded IDs
+#### Hard coded IDs
 
 As of this writing the client IDs of my apps (aws, google and facebook) are all hard wired into the example. 
 

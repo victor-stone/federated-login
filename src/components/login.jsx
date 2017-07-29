@@ -1,5 +1,6 @@
-import React       from 'react';
-import { connect } from 'react-redux';
+import React             from 'react';
+import { connect }       from 'react-redux';
+import { defaultStyles } from 'react-modal';
 
 import { 
   setCredentails,
@@ -70,6 +71,7 @@ const mapDispatchToProps = {  clearCredentails,
 const Login  = connect( mapStateToProps, mapDispatchToProps )(_Login);
 
 
+
 class Popup extends Component {
 
   constructor() {
@@ -128,5 +130,7 @@ const mapDispatchToProps2 = {  setCredentails,
                             };
 
 Login.Popup = connect( mapStateToProps2, mapDispatchToProps2 )(Popup);
+
+Login.Popup.defaultStyles = defaultStyles;
 
 module.exports =  Login;

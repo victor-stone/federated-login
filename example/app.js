@@ -19,23 +19,17 @@ class App extends Component {
   render() {
     return (<div>
               <Navbar />
-              {this.props.children}
+              <div className="well"><h1>{'This is my home page'}</h1></div>
+              <p>{'There is no other home page like it.'}</p>
             </div>);
   }
 
 }
 
-class Home extends Component {
-  render() {
-    return (<div className="well"><h1>{'This is home page'}</h1></div>);
-  }
-}
 
 ReactDOM.render(
   <Provider store={Store}>
-    <App>
-      <Home />
-    </App>
+    <App />
   </Provider>
     , document.querySelector('.container') );
 
