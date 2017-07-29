@@ -99,7 +99,7 @@ import {
 } from 'redux';
 
 import {
-  rootReducer,
+  loginReducer,
   actions
 } from 'federated-login';
 
@@ -107,7 +107,7 @@ const {
   auth, 
   modal, 
   profile 
-} = rootReducer;
+} = loginReducer;
 
 const reducers = {
   auth,

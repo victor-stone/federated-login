@@ -1,14 +1,23 @@
+import store from './store';
+import loginReducers from './store/reducers';
+import auth from './store/actions/auth';
+import modal from './store/actions/modal';
+import profile from './store/actions/profile';
+import loginPopup from './components/login.jsx';
+import providers from './auth/providers';
+import IdProvider from './auth/id-provider';
+import authorizers from './auth/authorizers';
 
 module.exports = {
-  store: require('../store'),
-  rootReducer: require('../store/reducers'),
+  store,
+  loginReducers,
   actions: {
-    auth: require('../store/actions/auth'),
-    modal: require('../store/actions/modal'),
-    profile: require('../store/actions/profile')
+    auth,
+    modal,
+    profile,
   },
-  loginPopup: require('../components/login'),
-  providers: require('../auth/providers'),
-  IdProvider: require('../auth/id-provider'),
-  authorizers: require('../auth/authorizers')
+  loginPopup,
+  providers,
+  IdProvider,
+  authorizers
 };

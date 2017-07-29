@@ -1,4 +1,4 @@
-import * as authorizers from './authorizers';
+import authorizers from './authorizers';
 
 /* global AWS */
 
