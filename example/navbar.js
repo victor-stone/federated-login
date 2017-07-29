@@ -1,5 +1,5 @@
 import React  from 'react';
-import Login  from '../src/components/login.jsx';
+import Login  from '../src/components/login';
 
 import Modal from 'react-modal';
 

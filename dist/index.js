@@ -20,7 +20,7 @@ var _profile = require('./store/actions/profile');
 
 var _profile2 = _interopRequireDefault(_profile);
 
-var _login = require('./components/login.jsx');
+var _login = require('./components/login');
 
 var _login2 = _interopRequireDefault(_login);
 

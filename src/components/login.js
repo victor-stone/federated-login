@@ -17,7 +17,7 @@ import {
   setProfile
 } from '../store/actions/profile';
 
-import Modal from './modal.jsx';
+import Modal from './modal';
 
 import providers from '../auth/providers';
 

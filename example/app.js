@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 
 import { Provider } from 'react-redux';
 
-import Navbar from './navbar.jsx';
+import Navbar from './navbar';
 
 import Store from '../src/store';
 
