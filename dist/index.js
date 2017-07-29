@@ -1,53 +1,70 @@
 'use strict';
 
-var _store = require('./store');
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _store2 = _interopRequireDefault(_store);
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var _reducers = require('./store/reducers');
+var fakeLogin = function fakeLogin() {};
+fakeLogin.Popup = function () {};
+fakeLogin.defaultStyles = { content: {}, overlay: {} };
 
-var _reducers2 = _interopRequireDefault(_reducers);
+var FederatedLoginsLib = function () {
+  function FederatedLoginsLib() {
+    _classCallCheck(this, FederatedLoginsLib);
+  }
 
-var _auth = require('./store/actions/auth');
+  _createClass(FederatedLoginsLib, [{
+    key: 'quietMode',
+    set: function set(flag) {
+      this._quietMode = flag;
+    },
+    get: function get() {
+      return this._quietMode;
+    }
+  }, {
+    key: 'store',
+    get: function get() {
+      return require('./store');
+    }
+  }, {
+    key: 'loginReducers',
+    get: function get() {
+      return require('./store/reducers');
+    }
+  }, {
+    key: 'actions',
+    get: function get() {
+      return {
+        auth: require('./store/actions/auth'),
+        modal: require('./store/actions/modal'),
+        profile: require('./store/actions/profile')
+      };
+    }
+  }, {
+    key: 'loginPopup',
+    get: function get() {
+      return this._quietMode ? fakeLogin : require('./components/login');
+    }
+  }, {
+    key: 'providers',
+    get: function get() {
+      var providers = require('./auth/providers');
+      providers.quietMode = this._quietMode;
+      return providers;
+    }
+  }, {
+    key: 'IdProvider',
+    get: function get() {
+      return require('./auth/id-provider');
+    }
+  }, {
+    key: 'authorizers',
+    get: function get() {
+      return require('./auth/authorizers');
+    }
+  }]);
 
-var _auth2 = _interopRequireDefault(_auth);
+  return FederatedLoginsLib;
+}();
 
-var _modal = require('./store/actions/modal');
-
-var _modal2 = _interopRequireDefault(_modal);
-
-var _profile = require('./store/actions/profile');
-
-var _profile2 = _interopRequireDefault(_profile);
-
-var _login = require('./components/login');
-
-var _login2 = _interopRequireDefault(_login);
-
-var _providers = require('./auth/providers');
-
-var _providers2 = _interopRequireDefault(_providers);
-
-var _idProvider = require('./auth/id-provider');
-
-var _idProvider2 = _interopRequireDefault(_idProvider);
-
-var _authorizers = require('./auth/authorizers');
-
-var _authorizers2 = _interopRequireDefault(_authorizers);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-module.exports = {
-  store: _store2.default,
-  loginReducers: _reducers2.default,
-  actions: {
-    auth: _auth2.default,
-    modal: _modal2.default,
-    profile: _profile2.default
-  },
-  loginPopup: _login2.default,
-  providers: _providers2.default,
-  IdProvider: _idProvider2.default,
-  authorizers: _authorizers2.default
-};
+module.exports = new FederatedLoginsLib();

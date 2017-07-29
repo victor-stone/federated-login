@@ -1,23 +1,54 @@
-import store from './store';
-import loginReducers from './store/reducers';
-import auth from './store/actions/auth';
-import modal from './store/actions/modal';
-import profile from './store/actions/profile';
-import loginPopup from './components/login';
-import providers from './auth/providers';
-import IdProvider from './auth/id-provider';
-import authorizers from './auth/authorizers';
 
-module.exports = {
-  store,
-  loginReducers,
-  actions: {
-    auth,
-    modal,
-    profile,
-  },
-  loginPopup,
-  providers,
-  IdProvider,
-  authorizers
-};
+const fakeLogin = () => {};
+fakeLogin.Popup = () => {};
+fakeLogin.defaultStyles = { content: {}, overlay: {} };
+
+class FederatedLoginsLib {
+
+  set quietMode(flag) {
+    this._quietMode = flag;
+  }
+
+  get quietMode() {
+    return this._quietMode;
+  }
+
+  get store() {
+    return require('./store');
+  }
+
+  get loginReducers() {
+    return require('./store/reducers');
+  }
+
+  get actions() {
+    return {
+      auth: require('./store/actions/auth'),
+      modal: require('./store/actions/modal'),
+      profile: require('./store/actions/profile'),
+    };
+  }
+
+  get loginPopup() {
+    return this._quietMode
+              ? fakeLogin
+              : require('./components/login');
+  }
+
+  get providers() {
+    const providers = require('./auth/providers');
+    providers.quietMode = this._quietMode;
+    return providers;
+  }
+
+  get IdProvider() {
+    return require('./auth/id-provider');
+  }
+  
+  get authorizers() {
+    return require('./auth/authorizers');
+  }
+}
+
+module.exports = new FederatedLoginsLib();
+

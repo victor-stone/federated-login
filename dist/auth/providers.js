@@ -4,12 +4,6 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _authorizers = require('./authorizers');
-
-var _authorizers2 = _interopRequireDefault(_authorizers);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
 
 function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
@@ -21,24 +15,20 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 var IDAuthorizationProviders = function () {
   function IDAuthorizationProviders() {
     _classCallCheck(this, IDAuthorizationProviders);
-
-    this.__providers = Object.keys(_authorizers2.default).filter(function (key) {
-      return key !== 'default';
-    }).map(function (key) {
-      return _authorizers2.default[key];
-    });
   }
 
   _createClass(IDAuthorizationProviders, [{
     key: 'add',
     value: function add(provider) {
-      provider.config = this._config;
-      this.__providers.push(provider);
+      if (!this._quietMode) {
+        provider.config = this._config;
+        this.providers.push(provider);
+      }
     }
   }, {
     key: 'find',
     value: function find(name) {
-      return this.__providers.find(function (p) {
+      return this.providers.find(function (p) {
         return p.name === name;
       });
     }
@@ -46,7 +36,7 @@ var IDAuthorizationProviders = function () {
     key: Symbol.iterator,
     value: function value() {
 
-      var p = [].concat(_toConsumableArray(this.__providers));
+      var p = [].concat(_toConsumableArray(this.providers));
       return {
         current: 0,
         last: p.length - 1,
@@ -61,6 +51,29 @@ var IDAuthorizationProviders = function () {
       };
     }
   }, {
+    key: 'quiteMode',
+    set: function set(flag) {
+      this._quietMode = flag;
+    }
+  }, {
+    key: 'providers',
+    get: function get() {
+      if (this._quietMode) {
+        return [];
+      }
+
+      if (!this.__providers) {
+        var authorizers = require('./authorizers');
+        this.__providers = Object.keys(authorizers).filter(function (key) {
+          return key !== 'default';
+        }).map(function (key) {
+          return authorizers[key];
+        });
+      }
+
+      return this.__providers;
+    }
+  }, {
     key: 'config',
     set: function set(_ref) {
       var _this = this;
@@ -73,7 +86,7 @@ var IDAuthorizationProviders = function () {
         region: REGION
       });
       this._config = _extends({ REGION: REGION, IDENTITY_POOL_ID: IDENTITY_POOL_ID }, otherstuff);
-      this.__providers.forEach(function (p) {
+      this.providers.forEach(function (p) {
         return p.config = _this._config;
       });
     }

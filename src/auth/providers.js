@@ -1,14 +1,26 @@
-import authorizers from './authorizers';
 
 /* global AWS */
 
 class IDAuthorizationProviders {
 
-  constructor() {
-    this.__providers = Object
-                        .keys(authorizers)
-                        .filter( key => key !== 'default' )
-                        .map( key => authorizers[key] );
+  set quiteMode(flag) {
+    this._quietMode = flag;
+  }
+
+  get providers() {
+    if( this._quietMode ) {
+      return [];
+    }
+
+    if( !this.__providers ) {
+      const authorizers = require('./authorizers');
+      this.__providers = Object
+                          .keys(authorizers)
+                          .filter( key => key !== 'default' )
+                          .map( key => authorizers[key] );      
+    }
+
+    return this.__providers;
   }
 
   set config({ REGION, IDENTITY_POOL_ID, ...otherstuff }) {
@@ -16,22 +28,24 @@ class IDAuthorizationProviders {
       region: REGION
     });
     this._config = { REGION, IDENTITY_POOL_ID, ...otherstuff };
-    this.__providers.forEach( p => p.config = this._config );
+    this.providers.forEach( p => p.config = this._config );
   }  
   
 
   add(provider) {
-    provider.config = this._config;
-    this.__providers.push(provider);
+    if( !this._quietMode ) {
+      provider.config = this._config;
+      this.providers.push(provider);
+    }
   }
 
   find(name) {
-    return this.__providers.find( p => p.name === name );
+    return this.providers.find( p => p.name === name );
   }
   
   [Symbol.iterator]() {
 
-    const p = [...this.__providers];
+    const p = [...this.providers];
     return {
       current: 0,
       last: p.length - 1,
