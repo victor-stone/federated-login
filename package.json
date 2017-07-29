@@ -30,5 +30,5 @@
     "redux": "^3.7.2",
     "redux-logger": "^2.7.4",
     "redux-thunk": "^2.2.0"
-  },
+  }
 }
